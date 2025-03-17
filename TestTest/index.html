@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url("./LOGO.jpeg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .container {
+            position: relative;
+            width: 100%;
+            top: -30px;
+            max-width: 400px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .container h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(90deg, #ff7eb3 0%, #ff758c 100%);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: linear-gradient(90deg, #ff5a8a 0%, #ff3860 100%);
+        }
+        .link {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="login-container">
+        <h2>Test Login</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="btn">Login</button>
+            <a href="#" class="link" id="show-register">Don't have an account? Register</a>
+        </form>
+    </div>
+
+    <div class="container" id="register-container" style="display: none;">
+        <h2>Register</h2>
+        <form id="register-form">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" name="fn" id="name" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+                <label for="register-email">Email</label>
+                <input type="email" name="EM" id="register-email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="register-password">Password</label>
+                <input type="password" name="pass" id="register-password" placeholder="Enter your password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" placeholder="Confirm your password" required>
+            </div>
+            <div class="form-group" style="display:flex">
+                <label for="options">User Role:</label>
+                <select id="options" name="options">
+                    <option value="0">Student</option>
+                    <option value="1">Teacher</option>
+                    <option value="2">Admin</option>
+                </select>
+            </div>
+            <button type="submit" class="btn">Register</button>
+            <a href="#" class="link" id="show-login">Already have an account? Login</a>
+        </form>
+    </div>
+
+    <script>
+        const loginContainer = document.getElementById('login-container');
+        const registerContainer = document.getElementById('register-container');
+        const showRegister = document.getElementById('show-register');
+        const showLogin = document.getElementById('show-login');
+        const submitRegister = document.getElementById('register-form');
+        const submitLogin = document.getElementById('login-form');
+
+        const showL = function(){
+            registerContainer.style.display = 'none';
+            loginContainer.style.display = 'block';
+        }
+        
+        showRegister.addEventListener('click', () => {
+            loginContainer.style.display = 'none';
+            registerContainer.style.display = 'block';
+        });  
+
+        showLogin.addEventListener('click', showL);
+
+        submitRegister.addEventListener('submit',(event)=>{
+            event.preventDefault();
+            console.log("Submit Clicked");
+            let inputs = submitRegister.querySelectorAll('input');
+            if (inputs[2].value==inputs[3].value){
+                let formData = new FormData();
+                formData.append("name", inputs[0].value);
+                formData.append("email", inputs[1].value);
+                formData.append("password", inputs[2].value);
+                formData.append("user_type",submitRegister.querySelector('select').value);
+
+                fetch('RegisterData.php', { 
+                    method: 'POST',
+                    body: formData
+                })
+                .then((response)=>{
+                    showL();
+                    return response.text()})
+                .then(data => alert(data))
+                .catch(error => console.error("Error:", error));
+            }
+            else alert("Passwords didn't match ! ! !"); 
+        });
+
+        submitLogin.addEventListener('submit',(event)=>{
+            event.preventDefault();
+            console.log("Submit Clicked");
+            let inputs = submitLogin.querySelectorAll('input');
+            let LformData = new FormData();
+            LformData.append("email", inputs[0].value);
+            LformData.append("password", inputs[1].value);
+
+            fetch('Login.php', { // Call PHP script
+                method: 'POST',
+                body: LformData
+            })
+            .then(response => response.text()) // Convert response to text
+            .then(data => {
+                console.log("Response:", data); // Debugging: Check the PHP response
+                if (data.trim() === "Success") { // Trim in case of extra spaces
+                    window.location.href = "FlexboxMod.php";
+                }else if (data.includes("Incorrect password")) {
+                    alert("Incorrect password. Please try again!");
+                } else if (data.includes("Email not Found")) {
+                    alert("Email not found. Please check your input.");
+                } else if (data.includes("Redirecting")) { // Custom success message
+                    window.location.href = "FlexboxMod.php"; // Redirect manually
+                } else {
+                    alert("Unexpected response from server.");
+                }
+            })
+            .catch(error => {
+                console.error("Fetch Error:", error);
+                alert("Failed to connect to the server. Please try again later.");
+            });
+        });
+    </script>
+</body>
+</html>
